@@ -4,7 +4,7 @@ import taskModel from './models/Task'
 import projectModel from './models/Project'
 import subprojectModel from './models/Subproject'
 import timelogModel from './models/Timelog'
-import * as moment from 'moment'
+import moment from 'moment'
 
 export const typeDefs = gql`
 	type Project {
@@ -32,25 +32,27 @@ export const typeDefs = gql`
 		activeTimelog: Timelog
 		total_time: String
 	}
-	input TaskFilters {
-		projectId: Int,
-		subprojectId: Int
-	}
 	type Timelog {
 		id: Int!
 		start_time: String!
 		finish_time: String
-		task: Task!
+		task: Task
 	}
 	type Query {
 		projects: [Project!]!
 		subprojects: [Subproject!]!
-		tasks(filters: TaskFilters): [Task!]!
+		tasks: [Task!]!
 		activeTimelog: Timelog
+		timelogs: [Timelog]
+		dailyTimelogs: [Timelog!]!
 	}
 	input TaskInput {
 		id: Int!
 		completed: Boolean
+		time_estimate: String
+		time_planned: String
+		max_date: String
+		finish_date: String
 		name: String
 		priority: String
 		comments: String
@@ -77,13 +79,20 @@ export const typeDefs = gql`
 
 export const resolvers = {
 	Query: {
-		tasks:  () => taskModel.list().then(list => list.reverse()),
+		tasks:   () => taskModel.list().then(list => list.reverse()),
 		projects: () => projectModel.list(),
-		subprojects: subprojectModel.list(),
+		subprojects: () => subprojectModel.list(),
 		activeTimelog: async () => {
 			const timelogs = await timelogModel.list()
 
 			return timelogs.find(({ finish_time }) => !finish_time)
+		},
+		timelogs: () => timelogModel.list(),
+		dailyTimelogs: async () => {
+			const timelogs = await timelogModel.list().then(list => list.reverse())
+
+
+			return timelogs.filter(({ finish_time }) => moment().diff(finish_time, 'days') == 0)
 		}
 	},
 	Timelog: {
