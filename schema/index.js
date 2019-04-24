@@ -31,6 +31,7 @@ export const typeDefs = gql`
 		timelogs: [Timelog!]!
 		activeTimelog: Timelog
 		total_time: String
+		completed: Boolean
 	}
 	type Timelog {
 		id: Int!
@@ -67,6 +68,7 @@ export const typeDefs = gql`
 	type Mutation {
 		createTask(name: String!): Task
 		updateTask(input: TaskInput!): Task
+		completeTask(id: Int!): Task
 		deleteTask(id: Int!): Task
 		createTimelog(task: Int!): Timelog
 		updateTimelog(input: TimelogInput!): Timelog
@@ -141,6 +143,11 @@ export const resolvers = {
 		createTask: (source, args) => taskModel.create(args),
 		updateTask: (source, args) =>
 			taskModel.update(args.input.id, args.input),
+		completeTask: async (source, args) => {
+			const task = await taskModel.find(args.id)
+
+			return taskModel.update(args.id, { completed: !task.completed, finish_date: task.completed ? '' : moment().format()})
+		},
 		deleteTask: (source, args) => taskModel.delete(args.id),
 		createTimelog: async (source, args) => {
 			const timelogs = await timelogModel.list()
