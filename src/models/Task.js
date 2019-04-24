@@ -20,7 +20,6 @@ class Task {
 	}
 
 	async update(id, data) {
-		console.log(data)
 		const a = await this.api
 			.patch(`/tasks/${id}`, data)
 			.then(res => res.data)

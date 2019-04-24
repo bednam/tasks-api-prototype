@@ -1,4 +1,5 @@
 import axios from 'axios'
+import moment from 'moment'
 
 class Project {
 	constructor() {
@@ -19,7 +20,7 @@ class Project {
 		const timelogs = await this.list()
 		if (timelogs.some(({ finish_time }) => !finish_time)) return
 		return this.api
-			.post('/timelogs', { ...data, start_time: new Date() })
+			.post('/timelogs', { ...data, start_time: moment().format() })
 			.then(res => res.data)
 	}
 
