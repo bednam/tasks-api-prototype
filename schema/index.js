@@ -81,7 +81,11 @@ export const typeDefs = gql`
 
 export const resolvers = {
 	Query: {
-		tasks:   () => taskModel.list().then(list => list.reverse()),
+		tasks:   async () =>  {
+			const list = await taskModel.list().then(list => list.reverse())
+			
+			return list.filter(({ completed, finish_date}) => !completed || completed && moment(finish_date).isSame(moment(), 'days'))
+		},
 		projects: () => projectModel.list(),
 		subprojects: () => subprojectModel.list(),
 		activeTimelog: async () => {
@@ -146,7 +150,7 @@ export const resolvers = {
 		completeTask: async (source, args) => {
 			const task = await taskModel.find(args.id)
 
-			return taskModel.update(args.id, { completed: !task.completed, finish_date: task.completed ? '' : moment().format()})
+			return taskModel.update(args.id, { completed: !task.completed, finish_date: task.completed ? '' : moment().format('DD/MM/YYYY')})
 		},
 		deleteTask: (source, args) => taskModel.delete(args.id),
 		createTimelog: async (source, args) => {
