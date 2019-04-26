@@ -24,7 +24,7 @@ export default gql`
     subproject: Subproject
     timelogs: [Timelog!]!
     activeTimelog: Timelog
-    total_time: String
+    repeat: String
     completed: Boolean
   }
   input TaskInput {
@@ -38,6 +38,7 @@ export default gql`
     priority: String
     comments: String
     project: Int
+    repeat: String
     subproject: Int
   }
   input TaskFilters {

@@ -1,6 +1,14 @@
 import moment from 'moment'
 import _ from 'lodash'
 
+const attachTaskToSubproject = async (models, subprojectId, taskId, ) => {
+  if(!subprojectId || !taskId) return
+  const subproject = await models.Subproject.find(subprojectId)
+  const tasks = subproject.tasks ? [...subproject.tasks, taskId] : [taskId]
+
+  await models.Subproject.update(subprojectId, { tasks })
+}
+
 export default {
   Query: {
     tasks:   async (parent, args, { models }) =>  {
@@ -32,17 +40,31 @@ export default {
 
         await models.Subproject.update(prevSubproject.id, { tasks: _.without(prevSubproject.tasks, args.input.id) })
       }
-      if(args.input.subproject) {
-        const subproject = await models.Subproject.find(args.input.subproject)
-        const tasks = subproject.tasks ? [...subproject.tasks, args.input.id] : [args.input.id]
 
-        await models.Subproject.update(args.input.subproject, { tasks })
+      if(args.input.subproject) {
+        await attachTaskToSubproject(models, args.input.subproject, args.input.id)
       }
 
       return await models.Task.update(args.input.id, args.input)
     },
     completeTask: async (source, args, { models }) => {
       const task = await models.Task.find(args.id)
+
+      if(task.repeat == 0) {
+        const newTask = await models.Task.create({ 
+          name: task.name, 
+          priority: task.priority,
+          time_estimate: task.time_estimate,
+          comments: task.comments,
+          project: task.project,
+          subproject: task.subproject,
+          repeat: '0'
+        })
+
+        await attachTaskToSubproject(models, task.subproject, newTask.id)
+
+        // publish new task
+      }
 
       return models.Task.update(args.id, { completed: !task.completed, finish_date: task.completed ? '' : moment().format('DD/MM/YYYY')})
     },
