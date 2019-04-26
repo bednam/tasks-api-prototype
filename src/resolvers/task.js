@@ -24,17 +24,22 @@ export default {
       }
      },
     updateTask: async (source, args, { models }) => {
-      const task = await models.Task.update(args.input.id, args.input)
+      const task = await models.Task.update(args.input.id)
       
+      if(args.input.subproject && task.subproject) {
+        const task = await models.Task.find(args.input.id)
+        const prevSubproject = await models.Subproject.find(task.subproject)
+
+        await models.Subproject.update(prevSubproject.id, { tasks: _.without(prevSubproject.tasks, args.input.id) })
+      }
       if(args.input.subproject) {
         const subproject = await models.Subproject.find(args.input.subproject)
-        
-        const tasks = subproject.tasks ? [...subproject.tasks, task.id] : [task.id]
+        const tasks = subproject.tasks ? [...subproject.tasks, args.input.id] : [args.input.id]
 
         await models.Subproject.update(args.input.subproject, { tasks })
       }
 
-      return task
+      return await models.Task.update(args.input.id, args.input)
     },
     completeTask: async (source, args, { models }) => {
       const task = await models.Task.find(args.id)

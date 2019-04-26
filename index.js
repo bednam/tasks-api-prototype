@@ -11,7 +11,7 @@ const server = new ApolloServer({
 	typeDefs,
 	resolvers,
 	playground: true,
-	context: { models }
+	context: { models },
 })
 
 server.applyMiddleware({ app })
