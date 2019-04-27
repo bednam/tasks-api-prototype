@@ -31,6 +31,11 @@ export default {
         const prevSubproject = await models.Subproject.find(task.subproject)
 
         await models.Subproject.update(prevSubproject.id, { tasks: _.without(prevSubproject.tasks, args.input.id) })
+      } 
+      if(!args.input.subproject && task.subproject) {
+        const prevSubproject = await models.Subproject.find(task.subproject)
+
+        await models.Subproject.update(prevSubproject.id, { tasks: _.without(prevSubproject.tasks, args.input.id) })
       }
 
       if(args.input.subproject) {
