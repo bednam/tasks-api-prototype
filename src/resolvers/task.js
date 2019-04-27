@@ -24,7 +24,7 @@ export default {
       }
      },
     updateTask: async (source, args, { models }) => {
-      const task = await models.Task.update(args.input.id)
+      const task = await models.Task.find(args.input.id)
       
       if(args.input.subproject && task.subproject) {
         const task = await models.Task.find(args.input.id)
@@ -37,7 +37,7 @@ export default {
         await attachTaskToSubproject(models, args.input.subproject, args.input.id)
       }
 
-      return await models.Task.update(args.input.id, args.input)
+      return models.Task.update(args.input.id, args.input)
     },
     completeTask: async (source, args, { models }) => {
       const task = await models.Task.find(args.id)
@@ -66,9 +66,11 @@ export default {
       const subprojects = await models.Subproject.list()
       subprojects.map(s => s.tasks.map(taskId => taskId === args.id && models.Subproject.update(s.id, {tasks: _.without(s.tasks, args.id)})))
       
+      const task = await models.Task.find(args.id)
+      
       await models.Task.delete(args.id)
-
-      return { id: args.id }
+      
+      return task
     },  
 
   },

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npm-run-all --parallel dev:*",
-    "dev:api": "nodemon --exec 'babel-node index.js' --ignore db.json",
+    "dev:api": "nodemon --exec babel-node index.js --ignore db.json",
     "dev:json": "json-server --watch db.json --port 4000"
   },
   "keywords": [],
