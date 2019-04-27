@@ -11,5 +11,6 @@ export default gql`
 		id: Int!
 		name: String!
 		subprojects: [Subproject!]!
+		time_estimate: String
 	}
 `

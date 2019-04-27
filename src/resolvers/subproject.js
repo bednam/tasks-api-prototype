@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export default {
   Query: {
     subprojects: (source, args, { models }) => models.Subproject.list(),
@@ -17,6 +19,14 @@ export default {
   },
   Subproject: {
     tasks: (source, args, { models }) => !source.tasks || !source.tasks.length ? [] : 
-    Promise.all(source.tasks.map(id => models.Task.find(id)))
+    Promise.all(source.tasks.map(id => models.Task.find(id))),
+    time_estimate: async (source, args, { models }) => {
+      const tasks = await models.Task.list().then(list => list.filter(task => task.subproject === source.id))
+
+      const estimate = tasks.reduce((acc, curr) => curr.time_estimate ? acc.add(moment.duration(curr.time_estimate, 'HH:mm:ss')) : acc, 
+        moment.duration(0))
+
+      return moment.utc(estimate.as('milliseconds')).format('HH:mm:ss')
+    }
   }
 }
