@@ -6,12 +6,11 @@ export default {
   Query: {
     tasks:   async (parent, args, { models }) =>  {
       let list = await models.Task.list().then(list => list.reverse())
-
       if(args.filters.subproject_id) {
         list = list.filter(task => task.subproject === args.filters.subproject_id)
       }
-
-      return list.filter(({ completed, finish_date}) => !completed || completed && moment(finish_date, 'DD/MM/YYYY').isSame(moment(), 'days'))
+      return list
+      // return list.filter(({ completed, finish_date}) => !completed || completed && moment(finish_date, 'DD/MM/YYYY').isSame(moment(), 'days'))
     },
   },
   Mutation: {
