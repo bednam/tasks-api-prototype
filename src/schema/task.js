@@ -25,7 +25,8 @@ export default gql`
     timelogs: [Timelog!]!
     activeTimelog: Timelog
     repeat: String
-    completed: Boolean
+    completed: Boolean,
+    time_status: String
   }
   input TaskInput {
     id: Int!

@@ -13,5 +13,6 @@ export default gql`
 		project: Project!
 		tasks: [Task]
 		time_estimate: String
+		time_status: String
 	}
 `

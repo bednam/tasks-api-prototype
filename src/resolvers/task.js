@@ -96,6 +96,14 @@ export default {
       return timelogs.filter(
         ({ task, finish_time }) => task == source.id && finish_time
       )
+    },
+    time_status: async (source, args, { models }) => {
+      const timelogs = await models.Timelog.list().then(list => list.filter(timelog => timelog.task === source.id))
+
+      const estimate = timelogs.reduce((acc, curr) => curr.finish_time ? acc.add(moment(curr.finish_time, 'HH:mm:ss').diff(moment(curr.start_time))) : acc, 
+        moment.duration(0))
+
+      return moment.utc(estimate.as('milliseconds')).format('HH:mm:ss')
     }
   }
 }

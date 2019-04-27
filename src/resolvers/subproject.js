@@ -27,6 +27,15 @@ export default {
         moment.duration(0))
 
       return moment.utc(estimate.as('milliseconds')).format('HH:mm:ss')
+    },
+    time_status: async (source, args, { models }) => {
+      const tasks = await models.Task.list().then(list => list.filter(task => task.subproject === source.id))      
+      let timelogs = await models.Timelog.list().then(list => list.filter(timelog => tasks.some(t => t.id === timelog.task)))
+
+      const estimate = timelogs.reduce((acc, curr) => curr.finish_time ? acc.add(moment(curr.finish_time).diff(moment(curr.start_time))) : acc, 
+        moment.duration(0))
+
+      return moment.utc(estimate.as('milliseconds')).format('HH:mm:ss')
     }
   }
 }
