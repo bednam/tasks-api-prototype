@@ -25,6 +25,7 @@ export default {
      },
     updateTask: async (source, args, { models }) => {
       const task = await models.Task.find(args.input.id)
+
       
       if(args.input.subproject && task.subproject) {
         const task = await models.Task.find(args.input.id)
@@ -32,8 +33,10 @@ export default {
 
         await models.Subproject.update(prevSubproject.id, { tasks: _.without(prevSubproject.tasks, args.input.id) })
       } 
-      if(!args.input.subproject && task.subproject) {
+      if(!args.input.subproject && task.subproject || args.input.project && task.subproject) {
         const prevSubproject = await models.Subproject.find(task.subproject)
+
+        args.input.subproject = null
 
         await models.Subproject.update(prevSubproject.id, { tasks: _.without(prevSubproject.tasks, args.input.id) })
       }
