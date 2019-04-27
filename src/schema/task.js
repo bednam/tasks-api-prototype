@@ -3,6 +3,7 @@ import { gql } from 'apollo-server-express';
 export default gql`
   extend type Query {
     tasks(filters: TaskFilters): [Task!]!
+    weeklyTasks: [Task]
   }
   extend type Mutation {
     createTask(name: String!): Task

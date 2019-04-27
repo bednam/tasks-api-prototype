@@ -10,8 +10,8 @@ export default {
         list = list.filter(task => task.subproject === args.filters.subproject_id)
       }
       return list
-      // return list.filter(({ completed, finish_date}) => !completed || completed && moment(finish_date, 'DD/MM/YYYY').isSame(moment(), 'days'))
     },
+    weeklyTasks: async (parent, args, { models }) => models.Task.list().then(list => list.filter(task => task.max_date ? Math.abs(moment(task.max_date, 'DD/MM/YYYY').diff(moment(), 'days')) < 4 : false))
   },
   Mutation: {
     createTask: (source, args, { models }) => models.Task.create(args),
