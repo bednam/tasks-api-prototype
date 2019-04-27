@@ -1,4 +1,5 @@
 import express from 'express'
+import cron from 'node-cron'
 import { ApolloServer } from 'apollo-server-express'
 import resolvers from './src/resolvers'
 import typeDefs from './src/schema'
@@ -18,6 +19,10 @@ server.applyMiddleware({ app })
 
 app.get('/', (req, res) => {
 	res.send({ hello: 'there!' })
+})
+
+cron.schedule('* * * * *', () => {
+	models.Task.repeat()
 })
 
 app.listen(PORT, () =>

@@ -1,13 +1,6 @@
 import moment from 'moment'
 import _ from 'lodash'
-
-const attachTaskToSubproject = async (models, subprojectId, taskId, ) => {
-  if(!subprojectId || !taskId) return
-  const subproject = await models.Subproject.find(subprojectId)
-  const tasks = subproject.tasks ? [...subproject.tasks, taskId] : [taskId]
-
-  await models.Subproject.update(subprojectId, { tasks })
-}
+import { attachTaskToSubproject } from '../models/utils'
 
 export default {
   Query: {
@@ -62,8 +55,6 @@ export default {
         })
 
         await attachTaskToSubproject(models, task.subproject, newTask.id)
-
-        // publish new task
       }
 
       return models.Task.update(args.id, { completed: !task.completed, finish_date: task.completed ? '' : moment().format('DD/MM/YYYY')})
